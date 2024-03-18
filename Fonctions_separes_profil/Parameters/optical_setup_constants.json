@@ -1,0 +1,20 @@
+{
+    "pos_to_foc_arr_constants": {
+        "input_beam_waist": 0.001,
+        "input_beam_pos": 0.7,
+        "trap_waist": 6e-06,
+        "central_pos": 0.1,
+        "shift_MOT": 0.007
+    },
+    "pos_to_foc_opt_setup_constants": {
+        "f1": 0.04,
+        "D1": 0.125,
+        "fopt": 0.085,
+        "D2": 0.15,
+        "f2": 0.15,
+        "D3": 0.45,
+        "f3": 0.3,
+        "D4": 0.4,
+        "f4": 0.1
+    }
+}
