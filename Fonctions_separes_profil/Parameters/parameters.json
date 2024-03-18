@@ -1,0 +1,24 @@
+{
+    "lambda_laser": 8.2e-07,
+    "trap_waist": 6e-06,
+    "input_beam_waist": 0.001,
+    "input_beam_pos": 0.7,
+    "phase_ref": 0,
+    "freq_ref": 110000000.0,
+    "L": [
+        [
+            0.0,
+            0.0
+        ],
+        [
+            2.8,
+            0.005
+        ],
+        [
+            0.0,
+            0.01
+        ]
+    ],
+    "Discret_rate_opt": 20000.0,
+    "Discret_rate_DDS": 20000.0
+}
