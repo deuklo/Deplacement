@@ -30,7 +30,8 @@ def load_json(file_path):
 
 # Utilisation de la fonction
 F0, F1 = load_json('/Users/gauthierrey/Desktop/STAGE/Déplacement/Soft_atoms_displacement/Soft_atom_disp_E17/Fonctions_separes_profil/Parameters/Profil_foc.json')
-keysight_adress = "USB0::2391::19207::MY59000570::0::INSTR"
+keysight_adress = 'USB0::0x0957::0x4B07::MY59000570::1::RAW'
+
 
 
 def foc_to_volt_arr(tmp_arr_foc_time, Vmin=0, Vmax=10):
@@ -105,50 +106,30 @@ def upload_waveform(waveform_tmp, amp_tmp, offset_tmp, channel_idx, sample_rate_
         
         -print check message "Waveforme succesfully uploaded."
     """ 
+    name = "wgein"
+    
+    rm = visa.ResourceManager()
+    inst = rm.open_resource('USB0::0x0957::0x4B07::MY59000570::0::INSTR')
+    sig = waveform_tmp
+    sRate = str(sample_rate_tmp)
+    #pulse_height = amp_tmp
+    pulse_height = 4
     
     
-    # Load ress manager 
-    rm = visa.ResourceManager('@py')
-
-    # Connect to the device
-    device_adress_tmp = str(device_adress_tmp) # insure good format
-    inst = rm.open_resource(device_adress_tmp)
-    print(inst.query("*IDN?"))
-    
-    # Send start message
     mess = "Arbitrary\nWaveform\nUpload"
     inst.write("DISP:TEXT '"+mess+"'")
-    
-    # Create directory
-    inst.write("MMEMORY:MDIR \"INT:\\remoteAdded\"")
-        
-    # Set byte order 
+    inst.write("MMEMORY:MDIR \"INT:\\remoteAdded\"")    
     inst.write('FORM:BORD SWAP')
-    
-    # Clear volatile memory
     inst.write('SOUR'+str(channel_idx)+':DATA:VOL:CLE')
-    
-    # Write waveform on device
-    inst.write_binary_values('SOUR'+str(channel_idx)+':DATA:ARB '+waveform_name_tmp+',', waveform_tmp, datatype='f', is_big_endian=False)
-
-    # Waiting time
+    inst.write_binary_values('SOUR'+str(channel_idx)+':DATA:ARB ' + name + ',', sig, datatype='f', is_big_endian=False)
     inst.write('*WAI')
-    
-    # Name the waveform
-    inst.write('SOUR'+str(channel_idx)+':FUNC:ARB '+waveform_name_tmp)
-    
-    
-    # Set parameters
-    inst.write('SOUR'+str(channel_idx)+':FUNC:ARB:SRAT ' + str(sample_rate_tmp))
-    inst.write('SOUR'+str(channel_idx)+':VOLT:OFFS '+ str(offset_tmp))
+    inst.write('SOUR'+str(channel_idx)+':FUNC:ARB:SRAT ' + sRate)
+    inst.write('SOUR'+str(channel_idx)+':VOLT:OFFS 0')
     inst.write('SOUR'+str(channel_idx)+':FUNC ARB')
-    inst.write('SOUR'+str(channel_idx)+':VOLT '+str(amp_tmp))
+    inst.write('SOUR'+str(channel_idx)+f':VOLT {pulse_height}')
+    inst.write(f'MMEM:STOR:DATA "INT:\\remoteAdded\\{name}.arb"')
+    inst.write("DISP:TEXT ''")
     
-    
-   
-   
-   
-    # Error check
     instrument_err = "error"
     while instrument_err != '+0,"No error"\n':
         inst.write('SYST:ERR?')
@@ -158,14 +139,15 @@ def upload_waveform(waveform_tmp, amp_tmp, offset_tmp, channel_idx, sample_rate_
         if instrument_err[:2] == "+0":    #no error
             continue;
         print(instrument_err)
+    
         
-    # Set trigger external + phase sync Test 21/11
+    # # Set trigger external + phase sync Test 21/11
     
     inst.write(' TRIG:SOUR EXT') 
-    inst.write('SOURce'+str(channel_idx)+':PHASe:SYN')
-    inst.write(' INIT')  
+    inst.write('SOUR1:PHASe:SYNC')
+    #inst.write(' INIT')  
     
-    # Close device
+    # # Close device
     inst.close()
     
     return (print("Channel setup, waiting for trigger"))
@@ -222,13 +204,24 @@ def prepare_generator_control(arr_volt_0, arr_volt_1, tmp_device_adress = keysig
     
     # Upload waveforms 
     
-    upload_waveform(V_arr_0_norm, V_amp_0, V_offset_0, 0, sample_rate, tmp_device_adress, "Channel 0 waveform")
-    upload_waveform(V_arr_1_norm, V_amp_1, V_offset_1, 1, sample_rate, tmp_device_adress, "Channel 0 waveform")
+    upload_waveform(V_arr_0_norm, V_amp_0, V_offset_0, 1, sample_rate, tmp_device_adress, "chnddef")
+    upload_waveform(V_arr_1_norm, V_amp_1, V_offset_1, 1, sample_rate, tmp_device_adress, "chawf")
     
     
     return print("Keysight properly setup")
 
 V0, d0min, d0_max = foc_to_volt_arr(F0)
 V1, d1min, d1_max = foc_to_volt_arr(F1)
+    
 prepare_generator_control(V0, V1, tmp_device_adress = keysight_adress)
+
+V0 = V0.tolist()
+V1 = V1.tolist()
+
+# Créez un dictionnaire contenant vos données
+data = {"V0": V0, "V1": V1}
+
+# Enregistrez les données dans un fichier JSON
+with open('/Users/gauthierrey/Desktop/Deplacement/Fonctions_separes_profil/Parameters/Profils_Tension.json', 'w') as f:
+    json.dump(data, f)
 
