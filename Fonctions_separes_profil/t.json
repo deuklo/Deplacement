@@ -1,0 +1,8 @@
+["::<Spec. Reg. RF0> | trig. in BNC A ::"]
+["::<Spec. Reg. RF1> | trig. in BNC A ::"]
+["::<Dyn. Reg. RF0, type:freq> | v_i = 110000000.0 Hz; v_f = 121608031.5 Hz; t = 4000.0 ns; a = 1.0 dBm; o = 0.0 rad::"]
+["::<Dyn. Reg. RF1, type:freq> | v_i = 110000000.0 Hz; v_f = 98391968.5 Hz; t = 4000.0 ns; a = 1.0 dBm; o = 0.0 rad::"]
+["::<Spec. Reg. RF1> | wait 4000.0 ns::"]
+["::<Spec. Reg. RF0> | wait 4000.0 ns::"]
+["::<Dyn. Reg. RF0, type:freq> | v_i = 121608031.5 Hz; v_f = 110000000.0 Hz; t = 4000.0 ns; a = 1.0 dBm; o = 0.0 rad::"]
+["::<Dyn. Reg. RF1, type:freq> | v_i = 98391968.5 Hz; v_f = 110000000.0 Hz; t = 4000.0 ns; a = 1.0 dBm; o = 0.0 rad::"]
